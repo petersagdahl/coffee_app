@@ -7,21 +7,28 @@ class queries:
 
     
     def registerUser(self, epost, fornavn, etternavn, passord):
-        self.con.commit()
-        self.con.close
+        
         self.cursor.execute("""
         Insert into bruker VALUES (:Email, :Fornavn, :Etternavn, :Passord);
         """, {"Email" : epost, "Fornavn" : fornavn, "Etternavn" : etternavn, "Passord" : passord})
         self.con.commit()
         self.con.close
 
+    def checkCoffee(self, kaffenavn, brennerinavn):
+        coffee = self.cursor.execute("""
+        SELECT * FROM ferdigbrentKaffe
+        WHERE Kaffenavn = :Kaffenavn AND Brennerinavn = :Brennerinavn;
+        """, {"Kaffenavn" : kaffenavn, "Brennerinavn" : brennerinavn})
+        self.con.commit()
+        self.con.close
+        return coffee.fetchall()
+
 
     def register(self,brenneri, kaffenavn, poeng, smaksnotat, email):
         self.cursor.execute("""
-        Insert into kaffebrenneri VALUES (:brenneri);
-        Insert into kaffesmaking VALUES (SID, Notater, Poeng, Smaksdato, Email, Kaffenavn, Brennerinavn) 
-        (:Notater, :Poeng, :Email, :Kaffenavn);
-        """, {"brenneri" : brenneri, "Kaffenavn" : kaffenavn, "Notater" : smaksnotat, "Poeng" : poeng, "Email" : email})
+        Insert into kaffesmaking (Notater, Poeng, Email, Kaffenavn, Brennerinavn) 
+        VALUES (:Notater, :Poeng, :Email, :Kaffenavn, :brennerinavn);
+        """, {"brennerinavn" : brenneri, "Kaffenavn" : kaffenavn, "Notater" : smaksnotat, "Poeng" : poeng, "Email" : email})
         self.con.commit()
         self.con.close
 
@@ -30,7 +37,7 @@ class queries:
         SELECT * from bruker WHERE Email = :email AND Passord = :passord;
         """, {"email" : email, "passord" : password})
         userParam = user.fetchall()
-        
+        print(userParam)
 
         self.con.commit()
         self.con.close
@@ -39,7 +46,7 @@ class queries:
     def testedMost(self):
         names = self.cursor.execute("""
         SELECT Fornavn, Etternavn, max(antallKaffe) as AntallSmakt FROM
-        (SELECT Fornavn, Etternavn, count(*) as antallKaffe FROM kaffeSmaking
+        (SELECT Fornavn, Etternavn, count(*) AS antallKaffe FROM kaffeSmaking
         NATURAL JOIN bruker
         GROUP BY Kaffenavn, Brennerinavn);
         """)
