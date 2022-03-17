@@ -118,6 +118,7 @@ class App:
         
         if action == 1:
             self.registerCoffeeTaste()
+            next = input("Trykk enter for å fortsette")
             return False
         elif action == 2:
             tasteList = self.SQL.testedMost()
@@ -132,7 +133,16 @@ class App:
             next = input("Trykk enter for å fortsette")
             return False
         elif action == 4:
-            word = str(input("Hvilket ord ville beskrevet den?"))
+            error = False
+            while True:
+                try:
+                    word = str(input("Hvilket ord ville beskrevet den?"))
+                except Exception as e:
+                        error = True
+                        print(e)
+                if (error == False):
+                            break
+            
             coffeeDescribedBy = self.SQL.describedBy(word)
             for item in coffeeDescribedBy:
                 print(item )
@@ -156,37 +166,49 @@ class App:
         ok = False
         prøveIgjen = "Nei"
         while ok == False:
-            brenneri = str(input("Brennerinavn"))
-            kaffenavn = str(input("Kaffenavn"))
-            poeng = int(input("Antall poeng (fra 1 til 10"))
-            smaksnotat = str(input("Smaksnotat"))
+            while True:
+                try:
+                    brenneri = str(input("Brennerinavn:  "))
+                    kaffenavn = str(input("Kaffenavn:  "))
+                    poeng = int(input("Antall poeng (fra 1 til 10):  "))
+                    smaksnotat = str(input("Smaksnotat:  "))
+                    break
+                except Exception as e:
+                        print(e)
+                
+            
 
             kaffestreng = str(self.SQL.checkCoffee(kaffenavn, brenneri)).strip().translate(str.maketrans("", "", ",[]()'"))
             if (kaffestreng == ''):
-                prøveIgjen = str(input("Kaffen finnes ikke i vår database. Vil du prøve en annen kaffe? (Ja/Nei)"))
+                while True:
+                    try:
+                        prøveIgjen = str(input("Vi har ikke kaffen din i databasen. Vil du prøve en annen kaffe? (Ja/Nei)"))
+                        break
+                    except Exception as e:
+                            print(e)
+                    
                 if prøveIgjen == "Ja":
                     continue
                 else:
                     break
             try:
                 self.SQL.register(brenneri, kaffenavn, poeng, smaksnotat, self.user.getEmail())
+                ok = True
             except sqlite3.Error as e:
                 print(e)
                 ok = False
-                error = True
-                prøveIgjen = str(input("Noe gikk feil. Vil du prøve igjen? (Ja/Nei)"))
+                while True:
+                    try:
+                        prøveIgjen = str(input("Noe gikk feil. Vil du prøve igjen? (Ja/Nei)"))
+                        break
+                    except Exception as e:
+                            print(e)
                 
             if (ok == False and prøveIgjen == "Nei"):
-                        ok = True
+                    ok = True
             elif (prøveIgjen == "Ja"):
-                    ok = False
-            
-    def inputSjekker(self, userInput):
-        while True:
-            try:
-                userInput
-            except Exception as e:
-                print(e)
+                    break
+
 
     def hasTastedList(kaffe):
         return print(kaffe)
