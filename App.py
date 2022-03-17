@@ -30,7 +30,16 @@ class App:
                     ok = True
                 except sqlite3.Error:
                     ok = False
-                    prøveIgjen = str(input("Noe gikk feil. Vil du prøve igjen? (Ja/Nei)"))
+                    while True:
+                        error = False
+                        try:
+                            prøveIgjen = str(input("Noe gikk feil. Vil du prøve igjen? (Ja/Nei)"))
+                        except Exception as e:
+                                error = True
+                                print(e)
+                        if (error == False):
+                            break
+                                
 
                 if (ok == False and prøveIgjen == "Nei"):
                     ok = True
@@ -54,10 +63,25 @@ class App:
                 except sqlite3.Error:
                     ok = False
                     error = True
-                    prøveIgjen = str(input("Noe gikk feil. Vil du prøve igjen? (Ja/Nei)"))
+                    while True:
+                        error = False 
+                        try:
+                            prøveIgjen = str(input("Noe gikk feil. Vil du prøve igjen? (Ja/Nei)"))
+                        except Exception as e:
+                            error = True
+                            print(e)
+                        if (error == False):
+                            break
 
                 if (len(user) < 4 and error == False):
-                    prøveIgjen = str(input("Noe gikk feil. Vil du prøve igjen? (Ja/Nei)"))
+                    while True:
+                        try:
+                            prøveIgjen = str(input("Noe gikk feil. Vil du prøve igjen? (Ja/Nei)"))
+                        except Exception as e:
+                                error = True
+                                print(e)
+                        if (error == False):
+                            break
 
                 if (prøveIgjen == "Ja"):
                     ok = False
@@ -81,7 +105,16 @@ class App:
             Foredlet:
             0. Ferdig
         """)
-        action = int(input("Hva har du lyst til å gjøre?"))
+        while True:
+            error = False
+            try:
+                action = int(input("Hva har du lyst til å gjøre?"))
+            except Exception as e:
+                error = True
+                print(e)
+            if (error == False):
+                break
+        
         
         if action == 1:
             self.registerCoffeeTaste()
@@ -90,30 +123,30 @@ class App:
             tasteList = self.SQL.testedMost()
             for item in tasteList:
                 print(item)
-            next = str(input("Trykk enter for å fortsette"))
+            next = input("Trykk enter for å fortsette")
             return False
         elif action == 3:
             mostValue = self.SQL.mostValue()
             for item in mostValue:
                 print(item)
-            next = str(input("Trykk enter for å fortsette"))
+            next = input("Trykk enter for å fortsette")
             return False
         elif action == 4:
             word = str(input("Hvilket ord ville beskrevet den?"))
             coffeeDescribedBy = self.SQL.describedBy(word)
             for item in coffeeDescribedBy:
                 print(item )
-            next = str(input("Trykk enter for å fortsette"))
+            next = input("Trykk enter for å fortsette")
             return False
         elif action == 5:
             print(self.SQL.testedMost())
-            next = str(input("Trykk enter for å fortsette"))
+            next = input("Trykk enter for å fortsette")
             return False
         elif action == 0:
             return True
         else:
             print("Ugyldig handling, prøv igjen")
-            next = str(input("Trykk enter for å fortsette"))
+            next = input("Trykk enter for å fortsette")
             return False
         
 
@@ -148,6 +181,12 @@ class App:
             elif (prøveIgjen == "Ja"):
                     ok = False
             
+    def inputSjekker(self, userInput):
+        while True:
+            try:
+                userInput
+            except Exception as e:
+                print(e)
 
     def hasTastedList(kaffe):
         return print(kaffe)
