@@ -37,7 +37,6 @@ class queries:
         SELECT * from bruker WHERE Email = :email AND Passord = :passord;
         """, {"email" : email, "passord" : password})
         userParam = user.fetchall()
-        print(userParam)
 
         self.con.commit()
         self.con.close
@@ -49,16 +48,21 @@ class queries:
         (SELECT Fornavn, Etternavn, Email FROM kaffeSmaking
         NATURAL JOIN bruker
         GROUP BY Kaffenavn, Brennerinavn)
-		GROUP BY Email;
+		GROUP BY Email
+        ORDER BY AntallSmakt DESC;
         """)
 
         self.con.commit()
         self.con.close
-        return names.fetchall()
+
+
+        result = [names.fetchall(), names.description]
+
+        return result
 
     def mostValue(self):
         coffee = self.cursor.execute("""
-        SELECT Brennerinavn, Kaffenavn, Kilospris, AVG(Poeng) as Snittscore FROM ferdigbrentKaffe
+        SELECT Brennerinavn, Kaffenavn, Kilospris, ROUND(AVG(Poeng), 2) as Snittscore FROM ferdigbrentKaffe
         NATURAL JOIN kaffeSmaking
         GROUP BY Kaffenavn, Brennerinavn
         ORDER BY Snittscore/Kilospris DESC;
@@ -66,7 +70,10 @@ class queries:
 
         self.con.commit()
         self.con.close
-        return coffee.fetchall()
+
+        result = [coffee.fetchall(), coffee.description]
+
+        return result
 
     def describedBy(self, word):
         coffee = self.cursor.execute("""
@@ -76,7 +83,10 @@ class queries:
         """.format(word, word))
         self.con.commit()
         self.con.close
-        return coffee.fetchall()
+
+        result = [coffee.fetchall(), coffee.description]
+
+        return result
 
     def findCoffees(self, kaffeInput):
         innsetting = self.lagString(kaffeInput)
@@ -86,11 +96,14 @@ class queries:
         NATURAL JOIN Foredlingsmetode
         NATURAL JOIN kaffeparti
         NATURAL JOIN gård
-        WHERE {};
+        {};
         """.format(innsetting))
         self.con.commit()
         self.con.close
-        return coffee.fetchall()
+
+        result = [coffee.fetchall(), coffee.description]
+
+        return result
 
     def lagString(self, kaffeInput):
         landString = ""
@@ -122,9 +135,8 @@ class queries:
             if totalString != "":
                 totalString += " AND "
             totalString += "(" + ikke_foredlingsmetode+ ")"
-
-
-        print(totalString)
+        if totalString != "":
+            totalString = "WHERE " + totalString
 
         return totalString
 
