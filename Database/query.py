@@ -78,14 +78,54 @@ class queries:
         self.con.close
         return coffee.fetchall()
 
-    def findCoffees(self, ):
+    def findCoffees(self, kaffeInput):
+        innsetting = self.lagString(kaffeInput)
+
         coffee = self.cursor.execute("""
         SELECT DISTINCT Brennerinavn, Kaffenavn FROM ferdigbrentKaffe
         NATURAL JOIN Foredlingsmetode
         NATURAL JOIN kaffeparti
         NATURAL JOIN gård
-        WHERE Forklaring <> "vaskede" COLLATE NOCASE AND (land = "Rwanda" COLLATE NOCASE OR land = "Colombia");
-        """.format())
+        WHERE {};
+        """.format(innsetting))
         self.con.commit()
         self.con.close
         return coffee.fetchall()
+
+    def lagString(self, kaffeInput):
+        landString = ""
+        foredlingsmetode = ""
+        ikke_foredlingsmetode = ""
+
+        for item in kaffeInput[0]:
+            landString = landString + "land = " + '"' + item + '"' + " COLLATE NOCASE OR "
+        landString = landString[:-3]
+
+        for item in kaffeInput[1]:
+            foredlingsmetode = foredlingsmetode + "Forklaring = " + '"' + item + '"' + " COLLATE NOCASE OR "
+        foredlingsmetode = foredlingsmetode[:-3]
+
+        for item in kaffeInput[2]:
+            ikke_foredlingsmetode = ikke_foredlingsmetode + "Forklaring <> " + '"' + item + '"' + " COLLATE NOCASE OR "
+        ikke_foredlingsmetode = ikke_foredlingsmetode[:-3]
+
+        totalString = ""
+
+        if landString != "":
+            totalString += "(" + landString + ")"
+        if foredlingsmetode != "":
+            if totalString != "":
+                totalString += " AND "
+            totalString += "(" + foredlingsmetode + ")"
+        
+        if ikke_foredlingsmetode != "":
+            if totalString != "":
+                totalString += " AND "
+            totalString += "(" + ikke_foredlingsmetode+ ")"
+
+
+        print(totalString)
+
+        return totalString
+
+

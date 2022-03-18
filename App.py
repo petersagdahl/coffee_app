@@ -149,7 +149,13 @@ class App:
             next = input("Trykk enter for å fortsette")
             return False
         elif action == 5:
-            print(self.SQL.testedMost())
+            kaffeInput = self.foretrukketKaffe()
+            kaffe = self.SQL.findCoffees(kaffeInput)
+            if (len(kaffe) == 0):
+                print("Ingen resultater...")
+            for item in kaffe:
+                print(item)
+            
             next = input("Trykk enter for å fortsette")
             return False
         elif action == 0:
@@ -209,6 +215,59 @@ class App:
             elif (prøveIgjen == "Ja"):
                     break
 
+    def foretrukketKaffe(self):
+        land = []
+        foredlingsmetoder = []
+        ikke_foredlingsmetoder = []
+
+        counter = 1
+
+        print("Skriv inn foretrukne land. Trykk enter når du er ferdig.")
+        while True:
+            inputLand = ""
+            try:
+                inputLand = str(input("Land {}:  ".format(counter)))
+                if (inputLand != ""):
+                    land.append(inputLand)
+                counter += 1
+            except Exception as e:
+                    print(e)
+            if (inputLand == ""):
+                break 
+            
+        counter = 1
+        print("Skriv inn foretrukne foredlingsmetoder. Trykk enter når du er ferdig.")
+        while True:
+            foredlingsmetode = ""
+            try:
+                foredlingsmetode = str(input("Foredlingsmetode {}:  ".format(counter)))
+                if (foredlingsmetode != ""):
+                    foredlingsmetoder.append(foredlingsmetode)
+                counter += 1
+            except Exception as e:
+                    print(e)
+            if (foredlingsmetode == ""):
+                break    
+
+        counter = 1
+        print("Skriv inn foredlingsmetoder du IKKE ønsker. Trykk enter når du er ferdig.")
+        while True:
+            ikke_foredlingsmetode = ""
+            try:
+                ikke_foredlingsmetode = str(input("Unngeå foredlingsmetode {}:  ".format(counter)))
+                if (ikke_foredlingsmetode in foredlingsmetoder):
+                    input("Kan ikke ha samme verdier for foretrukne og ikke foretrukne fordelingsmetorder")
+                    continue
+                if (ikke_foredlingsmetode != ""):
+                    ikke_foredlingsmetoder.append(ikke_foredlingsmetode)
+                counter += 1
+            except Exception as e:
+                    print(e)
+            if (ikke_foredlingsmetode == ""):
+                break  
+
+        kaffeInput = [land, foredlingsmetoder, ikke_foredlingsmetoder]
+        return kaffeInput
 
     def hasTastedList(kaffe):
         return print(kaffe)
@@ -219,8 +278,7 @@ class App:
     def coffeesDescribedBy(adjective):
         return None
 
-    def nonWashedCoffees():
-        return None
+    
 
 teste = App()
 
