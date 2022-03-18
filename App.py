@@ -197,10 +197,10 @@ class App:
         while ok == False:
             while True:
                 try:
-                    brenneri = str(input("Brennerinavn:  "))
-                    kaffenavn = str(input("Kaffenavn:  "))
-                    poeng = int(input("Antall poeng (fra 1 til 10):  "))
-                    smaksnotat = str(input("Smaksnotat:  "))
+                    brenneri = str(input('{:30}'.format("Brennerinavn:  ")))
+                    kaffenavn = str(input('{:30}'.format("Kaffenavn:  ")))
+                    poeng = int(input('{:30}'.format("Antall poeng (fra 1 til 10):  ")))
+                    smaksnotat = str(input('{:30}'.format("Smaksnotat:  ")))
                     break
                 except Exception as e:
                         print(e)
