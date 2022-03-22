@@ -1,7 +1,10 @@
+from msilib.schema import Error
 from unittest import result
 from Database.query import queries
 import sqlite3
 from Bruker import bruker
+import datetime
+
 
 class App:
 
@@ -11,13 +14,179 @@ class App:
 
     def runApp(self):
         done = False
-        loggetInn = self.logIn()
+        print("""
+        Skriv inn tall:
+            1. User
+            2. Admin 
+            """)
+        start = int(input('{:15}'.format("Handling:  ")))
 
-        if (loggetInn == True):
-            while done == False:
-                done = self.registerAction()
+        if (start == 1):
+            loggetInn = self.logIn()
+            
 
-    
+            if (loggetInn == True):
+                while done == False:
+                    done = self.registerAction()
+        elif (start == 2):
+            self.admin()
+
+    def admin(self):
+        print("""
+        Regsitrer en kaffe.
+        """)
+        kaffebønner = []
+        gårdsid = None
+        metodeID = None
+        kaffeparti = None
+        kaffebrenneri = None
+
+
+        #GÅRD
+        print("Hvilken gård dyrker kaffens bønner?")
+        while True:
+            try:
+                gårdsid = int(input('{:15}'.format("GårdsID:  ")))
+                break
+            except Exception as e:
+                print(e)
+        if (self.SQL.sjekkResultat(self.SQL.sjekkGård(gårdsid)) == False):
+            respond = str(input("Gården finnes ikke, vil du registrere en ny? (Ja/Nei)"))
+            while True:
+                if (respond.casefold() == "ja"):
+                    try:
+                        gårdsid = str(input('{:15}'.format("GårdsID:  ")))
+                        gårdsnavn = str(input('{:15}'.format("Gårdsnavn:  ")))
+                        moh = str(input('{:15}'.format("Meter over havet:  ")))
+                        region = str(input('{:15}'.format("Region:  ")))
+                        land = str(input('{:15}'.format("Land:  ")))
+                
+                        self.SQL.addGård(gårdsid, gårdsnavn, moh, region, land)
+                        break
+                    except Exception as e:
+                        print(e)
+
+
+                else:
+                    return
+        #foredlingsmetode
+        foredlingsmetode = str(input('{:15}'.format("Foredlingmetode:  "))).casefold()
+        done = False
+        while done == False:
+            try:
+                if (self.SQL.sjekkResultat(foredlingsmetode) == True):
+                    respond = str(input("""
+                    Det finnes allerede metode(r) med samme navn. 
+                    Vil du likevelregistrere ny metode med samme navn? (Ja/Nei):  
+                    """))
+                    if (respond.casefold() == "nei"):
+                        metodeID = self.SQL.sjekkMetode(foredlingsmetode)
+                        break
+                    elif (respond.casefold() == "ja"):
+                        metodenavn = str(input('{:15}'.format("Metodenavn:  ")))
+                        forklaring = str(input('{:15}'.format("Foklaring")))
+                        metodeID = self.SQL.addForedlingsmetode(metodenavn, forklaring)
+                        break
+                else:
+                    metodenavn = str(input('{:15}'.format("Metodenavn:  ")))
+                    forklaring = str(input('{:15}'.format("Foklaring")))
+                    metodeID = self.SQL.addForedlingsmetode(metodenavn, forklaring)
+                    break
+
+            except Exception as e:
+                print(e)
+
+        #kaffebønner
+        kaffeart = ""
+        print("""Skriv inn de kaffebønnene ditt kaffeparti betstår av. Husk at alle disse må produseres av gården du har valgt.""")
+        while kaffeart != "ferdig":
+           
+            try:
+                kaffeart = str(input('{:15}'.format("Skriv inn kaffeart:  "))).casefold()
+                if (self.SQL.sjekkResultat(self.SQL.sjekkKaffebønner(kaffeart, gårdsid))):
+                    input("Denne er allerede registrert. Enter for å fortsette.")
+                    kaffeID = int(str(self.SQL.sjekkKaffebønner(kaffeart, gårdsid)).strip().translate(str.maketrans("", "", "[]()'")))
+                    kaffebønner.append(kaffeID)
+                    continue
+
+                kaffeID = self.SQL.addKaffebønner(kaffeart, gårdsid)
+                kaffebønner.append(kaffeID)
+                break
+            except Exception as e:
+                print(e)
+
+        #kaffeparti
+        
+        while True:
+            print("Registrer kaffepartiet kaffen består av.")
+            try:
+                #kanskje vi bare skal sette en begrensning om at en kaffe = et kaffeparti
+                respond = str(input("Er partiet allerede registrert? (Ja/Nei):  "))
+                if (respond.casefold() == "ja"):
+                    kaffeparti = int(input('{:15}'.format("KPID:  ")))
+                    break
+                else:
+                    innhøstingsår = int(input('{:15}'.format("Innhøstingsår:  ")))
+                    kilosprisUSD = float(input('{:15}'.format("Kilospris i USD:  ")))
+                    print(metodeID)
+                    kaffeparti = self.SQL.addParti(innhøstingsår, kilosprisUSD, gårdsid, metodeID, kaffebønner)
+                    break
+
+            except Exception as e:
+                    print(e)
+
+        #kaffebrenneri
+        while True:
+            print("Hvilket kaffebrenneri har brent kaffen?")
+            try:
+                kaffebrenneri = str(input('{:15}'.format("Brennerinavn:  ")))
+
+                if (self.SQL.sjekkResultat(self.SQL.sjekkBrenneri(kaffebrenneri))):
+                    kaffebrenneri = self.SQL.sjekkBrenneri(kaffebrenneri)
+                    break
+                else:
+                    self.SQL.addBrenneri(kaffebrenneri)
+                    break
+            except Exception as e:
+                print(e)
+
+        #ferdigbrentkaffe
+        while True:
+            print("Registrer ferdigbrent kaffe")
+            try:
+                kaffenavn = str(input('{:15}'.format("Kaffenavn:  ")))
+                brenningsgrad = str(input('{:15}'.format("Brenningsgrad:  ")))
+                dato = False
+                while dato == False:
+                    brennedato = str(input('{:15}'.format("Brennedato:  ")))
+                    dato = self.sjekkDato(brennedato)
+                beskrivelse = str(input('{:15}'.format("Beskrivelse:  ")))
+                kilospris = float(input('{:15}'.format("Kilospris:  ")))
+
+                if (self.SQL.sjekkResultat(self.SQL.sjekkFerdigbrentKaffe(kaffenavn, kaffebrenneri))):
+                    input("Kaffen eksistere fra før. Velg et annet kaffenavn for å fortsette.")
+                    continue
+                else:
+                    self.SQL.addFerdigbrentKaffe(kaffenavn, kaffebrenneri, brenningsgrad, brennedato, beskrivelse, kilospris, kaffeparti) 
+                    break
+            except Exception as e:
+                print(e)
+
+
+
+
+                
+
+    def sjekkDato(self, datostring):
+        try:   
+            datetime.datetime.strptime(datostring, '%Y-%m-%d')
+        except ValueError:
+            return False
+        return True
+
+
+
+
     def logIn(self):
         ok = False
         
