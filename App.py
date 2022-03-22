@@ -16,8 +16,8 @@ class App:
         done = False
         print("""
         Skriv inn tall:
-            1. User
-            2. Admin 
+        1. User
+        2. Admin 
             """)
         start = int(input('{:15}'.format("Handling:  ")))
 
@@ -74,7 +74,7 @@ class App:
         done = False
         while done == False:
             try:
-                if (self.SQL.sjekkResultat(foredlingsmetode) == True):
+                if (self.SQL.sjekkMetode(foredlingsmetode) != ""):
                     respond = str(input("""
                     Det finnes allerede metode(r) med samme navn. 
                     Vil du likevelregistrere ny metode med samme navn? (Ja/Nei):  
@@ -103,15 +103,15 @@ class App:
            
             try:
                 kaffeart = str(input('{:15}'.format("Skriv inn kaffeart:  "))).casefold()
-                if (self.SQL.sjekkResultat(self.SQL.sjekkKaffebønner(kaffeart, gårdsid))):
+                if (self.SQL.sjekkResultat(self.SQL.sjekkKaffebønner(kaffeart, gårdsid)) and kaffeart.casefold() != "ferdig"):
                     input("Denne er allerede registrert. Enter for å fortsette.")
                     kaffeID = int(str(self.SQL.sjekkKaffebønner(kaffeart, gårdsid)).strip().translate(str.maketrans("", "", "[]()'")))
                     kaffebønner.append(kaffeID)
                     continue
-
-                kaffeID = self.SQL.addKaffebønner(kaffeart, gårdsid)
-                kaffebønner.append(kaffeID)
-                break
+                elif kaffeart.casefold() != "ferdig":
+                    kaffeID = self.SQL.addKaffebønner(kaffeart, gårdsid)
+                    kaffebønner.append(kaffeID)
+                    continue
             except Exception as e:
                 print(e)
 
