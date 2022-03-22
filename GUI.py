@@ -5,17 +5,17 @@ from sqlalchemy import null
 
 
 def registerAction():
-    action = str(input("What do you want to do?"))
+    action = str(input("Hva vil du gjøre?"))
     
-    if action == 'registrer kaffe':
+    if action == 'Registrer kaffe':
         brenneri = str(input("Brennerinavn"))
         kaffenavn = str(input("Kaffenavn"))
         poeng = int(input("Antall poeng (fra 1 til 10"))
         smaksnotat = str(input("Smaksnotat"))
         registerCoffee(brenneri, kaffenavn, poeng, smaksnotat)
-        return "Cool"
+        return "Supert!"
     else:
-        return "Not an action, try again"
+        return "Ikke en handling, prøv igjen"
 
 
 def registerCoffee(brenneri, kaffenavn, poeng, smaksnotat):

@@ -76,7 +76,7 @@ class queries:
         NATURAL JOIN Foredlingsmetode
         NATURAL JOIN kaffeparti
         NATURAL JOIN gård
-        WHERE Forklaring <> "vaskede" COLLATE NOCASE AND (land = "Rwanda" COLLATE NOCASE OR land = "Colombia");
+        WHERE Metodenavn <> "vasket" COLLATE NOCASE AND (land = "Rwanda" COLLATE NOCASE OR land = "Colombia");
         """.format())
         self.con.commit()
         self.con.close

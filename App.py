@@ -12,16 +12,16 @@ def runApp():
 
    
 def logIn():
-    mode = str(input("Do you have a user?"))
-    if mode == 'no':
-        print('Register now...')
+    mode = str(input("Har du en bruker?"))
+    if mode == 'Nei':
+        print('Register nå...')
         email = str(input("Email:"))
-        forname = str(input("Forname:"))
-        surname = str(input("Surname:"))
+        forname = str(input("Fornavn:"))
+        surname = str(input("Etternavn:"))
         password = str(input("Passord:"))
         SQL.registerUser(email, forname, surname, password)
-    elif mode == 'yes':
-        print('Log in now...')
+    elif mode == 'Ja':
+        print('Logg inn nå...')
         email = str(input("Email:"))
         password = str(input("Passord:"))
         user = SQL.getUser(email, password)
@@ -40,7 +40,7 @@ def registerAction(user):
            Foredlet:
         0. Ferdig
     """)
-    action = int(input("What do you want to do?"))
+    action = int(input("Hva vil du gjøre?"))
     
     if action == 1:
         brenneri = str(input("Brennerinavn"))
@@ -53,30 +53,30 @@ def registerAction(user):
         tasteList = SQL.testedMost()
         for item in tasteList:
             print(item)
-        next = str(input("Enter to continiue"))
+        next = str(input("Fyll inn for å fortsette"))
         return False
     elif action == 3:
         mostValue = SQL.mostValue()
         for item in mostValue:
             print(item)
-        next = str(input("Enter to continiue"))
+        next = str(input("Fyll inn for å fortsette"))
         return False
     elif action == 4:
         word = str(input("What word should it be described by?"))
         coffeeDescribedBy = SQL.describedBy(word)
         for item in coffeeDescribedBy:
             print(item)
-        next = str(input("Enter to continiue"))
+        next = str(input("Fyll inn for å fortsette"))
         return False
     elif action == 5:
         print(SQL.testedMost())
-        next = str(input("Enter to continiue"))
+        next = str(input("Fyll inn for å fortsette"))
         return False
     elif action == 0:
         return True
     else:
-        print("Not an action, try again")
-        next = str(input("Enter to continiue"))
+        print("Ikke en handling, prøv igjen")
+        next = str(input("Fyll inn for å fortsette"))
         return False
     
 
