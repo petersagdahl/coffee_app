@@ -145,22 +145,22 @@ class queries:
     Mulig alt under kan ekskluderes, men litt funksjonalitet for admin.
     """
 
-    def addBrenneri(self, brennerinavn):
-        self.cursor.execute("""
-        Insert into kaffebrenneri VALUES (:Brennerinavn);
-        """, {"Brennerinavn" : brennerinavn})
+    # def addBrenneri(self, brennerinavn):
+    #     self.cursor.execute("""
+    #     Insert into kaffebrenneri VALUES (:Brennerinavn);
+    #     """, {"Brennerinavn" : brennerinavn})
 
-        self.con.commit()
-        self.con.close
+    #     self.con.commit()
+    #     self.con.close
 
-    def sjekkBrenneri(self, brennerinavn):
-        self.cursor.execute("""
-        SELECT * FROM kaffebrenneri
-        WHERE brennerinavn = :Brennerinavn;
-        """, {"Brennerinavn" : brennerinavn})
+    # def sjekkBrenneri(self, brennerinavn):
+    #     self.cursor.execute("""
+    #     SELECT * FROM kaffebrenneri
+    #     WHERE brennerinavn = :Brennerinavn;
+    #     """, {"Brennerinavn" : brennerinavn})
 
-        self.con.commit()
-        self.con.close
+    #     self.con.commit()
+    #     self.con.close
 
 
 
@@ -182,48 +182,51 @@ class queries:
 
         return resultat.fetchall()
 
-    def addKaffebønner(self, kaffeart, gårdsid):
-        #må finne KBID
-        IDer = self.cursor.execute("""
-        SELECT KBID FROM kaffebønner;
-        """)
-
-        IDliste = list(filter(None, str(IDer.fetchall()).strip().translate(str.maketrans("", "", ",[]('")).split(")")))
-        IDliste = [int(i) for i in IDliste]
-        førsteLedigeID = 0
-
-        if (len(IDliste) != 0):
-            while førsteLedigeID <= max(IDliste):
-                if førsteLedigeID not in IDliste:
-                    break
-                førsteLedigeID += 1
-
+    def addKaffebønner(self, bønnenavn, kaffeart, gårdsid):
         #Legger til kaffe
         self.cursor.execute("""
-        Insert into kaffebønner (KBID, Kaffeart)
-        VALUES (:KBID, :kaffeart);
-        """, {"KBID" : førsteLedigeID, "kaffeart" : kaffeart})
+        Insert into kaffebønner (Bønnenavn, Kaffeart)
+        VALUES (:bønnenavn, :kaffeart);
+        """, {"bønnenavn" : bønnenavn, "kaffeart" : kaffeart})
 
-
+        #sjekker om gården dyrker denne bønna
         #legge til gården som dyrker
+        if not (self.sjekkResultat(self.sjekkKaffedyrker(bønnenavn, gårdsid))):
+            self.cursor.execute("""
+            Insert into dyrkesAv VALUES (:bønnenavn, :gårdsID);
+            """, {"bønnenavn" : bønnenavn, "gårdsID" : gårdsid})
+            
+            self.con.commit()
+            self.con.close
+
+    def sjekkKaffedyrker(self, bønnenavn, gårdsid):
+        resultat = self.cursor.execute("""
+        SELECT * FROM dyrkesAv
+        WHERE Bønnenavn = :bønnenavn AND GårdsID = :gårdsid;
+        """, {"bønnenavn" : bønnenavn, "gårdsid" : gårdsid})
+        self.con.commit()
+        self.con.close
+
+        
+
+        return str(resultat.fetchall()).strip().translate(str.maketrans("", "", ",[]('"))
+
+    def addKaffedyrker(self, bønnenavn, gårdsid):
         self.cursor.execute("""
-        Insert into dyrkesAv VALUES (:KBID, :gårdsID);
-        """, {"KBID" : førsteLedigeID, "gårdsID" : gårdsid})
+        Insert into dyrkesAv VALUES (:bønnenavn, :gårdsID);
+        """, {"bønnenavn" : bønnenavn, "gårdsID" : gårdsid})
         
         self.con.commit()
         self.con.close
 
 
 
-        return førsteLedigeID
-
-    def sjekkKaffebønner(self, kaffeart, gårdsid):
+    def sjekkKaffebønner(self, bønnenavn):
 
         resultat = self.cursor.execute("""
-        SELECT KBID FROM dyrkesAv
-        NATURAL JOIN kaffebønner
-        WHERE Bønnenavn = :kaffe AND GårdsID = :gårdsid;
-        """, {"kaffeart" : kaffeart, "gårdsid" : gårdsid})
+        SELECT * FROM kaffebønner
+        WHERE Bønnenavn = :bønnenavn;
+        """, {"bønnenavn" : bønnenavn})
         self.con.commit()
         self.con.close
 

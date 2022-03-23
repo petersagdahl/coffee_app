@@ -8,7 +8,7 @@ import datetime
 class App:
 
     def __init__(self):
-        self.SQL =  queries('kaffeDatabase.db')
+        self.SQL =  queries('FerdigstiltDatabase.db')
         self.user = None
 
     def runApp(self):
@@ -42,7 +42,16 @@ Regsitrer en kaffe.
 
         #Kaffeparti
         print("Skriv inn kaffepartiet kaffen består av.")
-        respond = str(input("Er partiet allerede registrert? (Ja/Nei):  "))
+        while True:
+            try:
+                respond = str(input("Er partiet allerede registrert? (Ja/Nei):  "))
+                if (respond.casefold() != "ja" and respond.casefold() != "nei"):
+                    print("Ugyldig input. Prøv igjen...")
+                    continue
+                break
+            except Exception as e:
+                print(e)
+        
         while True and respond.casefold() == "ja":
             
             print("Registrer kaffepartiet kaffen består av.")
@@ -115,27 +124,28 @@ Vil du likevelregistrere ny metode med samme navn? (Ja/Nei):
                     print(e)
 
             #kaffebønner
-            kaffeart = ""
+            bønnenavn = ""
             print("""
-Skriv inn de kaffebønnene ditt kaffeparti betstår av. 
+Skriv inn de kaffebønnene ditt kaffeparti består av. 
 Husk at alle disse må produseres av gården du har valgt.
 """)
-            while kaffeart != "ferdig":
+            while bønnenavn != "ferdig":
             
                 try:
-                    kaffeart = str(input('{:15}'.format("Skriv inn kaffeart:  "))).casefold()
-                    if (self.SQL.sjekkResultat(self.SQL.sjekkKaffebønner(kaffeart, gårdsid)) and kaffeart.casefold() != "ferdig"):
+                    bønnenavn = str(input('{:15}'.format("Skriv inn bønnenavn:  "))).casefold()
+                    if (self.SQL.sjekkResultat(self.SQL.sjekkKaffebønner(bønnenavn)) and bønnenavn.casefold() != "ferdig"):
+                        self.SQL.addKaffedyrker(bønnenavn, gårdsid)
                         input("Denne er allerede registrert. Enter for å fortsette.")
-                        kaffeID = int(str(self.SQL.sjekkKaffebønner(kaffeart, gårdsid)).strip().translate(str.maketrans("", "", "[]()'")))
-                        kaffebønner.append(kaffeID)
+                        kaffebønner.append(bønnenavn)
                         continue
-                    elif kaffeart.casefold() != "ferdig":
-                        kaffeID = self.SQL.addKaffebønner(kaffeart, gårdsid)
-                        kaffebønner.append(kaffeID)
+                    elif bønnenavn.casefold() != "ferdig":
+                        kaffeart = str('{:15}'.format(input("Kaffeart:  ")))[:-1]
+                        self.SQL.addKaffebønner(bønnenavn, kaffeart, gårdsid)
+                        kaffebønner.append(bønnenavn)
                         continue
-                    elif kaffeart.casefold() == "ferdig" and len(kaffebønner) == 0:
+                    elif bønnenavn.casefold() == "ferdig" and len(kaffebønner) == 0:
                         input("Et kaffeparti må bestå av minst én kaffebønne. Trykk enter for å fortsette.")
-                        kaffeart = "Ikke-ferdig"
+                        bønnenavn = "Ikke-ferdig"
                 except Exception as e:
                     print(e)
 
@@ -173,7 +183,7 @@ Husk at alle disse må produseres av gården du har valgt.
             print("Registrer ferdigbrent kaffe")
             try:
                 kaffenavn = str(input('{:15}'.format("Kaffenavn:  ")))
-                brenningsgrad = str(input('{:15}'.format("Brenningsgrad:  ")))
+                brenningsgrad = str(input('{:15}'.format("Brenningsgrad (lys, middels eller mørk):  ")))
                 dato = False
                 while dato == False:
                     brennedato = str(input('{:15}'.format("Brennedato:  ")))
@@ -269,7 +279,7 @@ Husk at alle disse må produseres av gården du har valgt.
                     while True:
                         try:
                            
-                            prøveIgjen = str(input("Noe ble feil. Vil du prøve igjen? (Ja/Nei):  "))
+                            prøveIgjen = str(input("Noe gikk galt. Vil du prøve igjen? (Ja/Nei):  "))
                             if (mode.casefold() != "ja" and mode.casefold() != "nei"):
                                 print("Ugyldig input. Prøv igjen...")
                                 continue
@@ -282,7 +292,7 @@ Husk at alle disse må produseres av gården du har valgt.
                     ok = False
                     while True:
                         try:
-                            prøveIgjen = str(input("Noe ble feil. Vil du prøve igjen? (Ja/Nei):  "))
+                            prøveIgjen = str(input("Noe gikk galt. Vil du prøve igjen? (Ja/Nei):  "))
                             if (mode.casefold() != "ja" and mode.casefold() != "nei"):
                                 print("Ugyldig input. Prøv igjen...")
                                 continue
