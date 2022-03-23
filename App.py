@@ -5,7 +5,6 @@ import sqlite3
 from Bruker import bruker
 import datetime
 
-
 class App:
 
     def __init__(self):
@@ -16,7 +15,7 @@ class App:
         done = False
         print("""
         Skriv inn tall:
-            1. User
+            1. Bruker
             2. Admin 
             """)
         start = int(input('{:15}'.format("Handling:  ")))
@@ -33,7 +32,7 @@ class App:
 
     def admin(self):
         print("""
-        Regsitrer en kaffe.
+        Registrer en kaffe.
         """)
         kaffebønner = []
         gårdsid = None
@@ -77,7 +76,7 @@ class App:
                 if (self.SQL.sjekkResultat(foredlingsmetode) == True):
                     respond = str(input("""
                     Det finnes allerede metode(r) med samme navn. 
-                    Vil du likevelregistrere ny metode med samme navn? (Ja/Nei):  
+                    Vil du likevel registrere ny metode med samme navn? (Ja/Nei):  
                     """))
                     if (respond.casefold() == "nei"):
                         metodeID = self.SQL.sjekkMetode(foredlingsmetode)
@@ -98,7 +97,7 @@ class App:
 
         #kaffebønner
         kaffeart = ""
-        print("""Skriv inn de kaffebønnene ditt kaffeparti betstår av. Husk at alle disse må produseres av gården du har valgt.""")
+        print("""Skriv inn de kaffebønnene ditt kaffeparti består av. Husk at alle disse må produseres av gården du har valgt.""")
         while kaffeart != "ferdig":
            
             try:
@@ -127,7 +126,7 @@ class App:
                     break
                 else:
                     innhøstingsår = int(input('{:15}'.format("Innhøstingsår:  ")))
-                    kilosprisUSD = float(input('{:15}'.format("Kilospris i USD:  ")))
+                    kilosprisUSD = float(input('{:15}'.format("Kilopris i USD:  ")))
                     print(metodeID)
                     kaffeparti = self.SQL.addParti(innhøstingsår, kilosprisUSD, gårdsid, metodeID, kaffebønner)
                     break
@@ -161,10 +160,10 @@ class App:
                     brennedato = str(input('{:15}'.format("Brennedato:  ")))
                     dato = self.sjekkDato(brennedato)
                 beskrivelse = str(input('{:15}'.format("Beskrivelse:  ")))
-                kilospris = float(input('{:15}'.format("Kilospris:  ")))
+                kilospris = float(input('{:15}'.format("Kilopris:  ")))
 
                 if (self.SQL.sjekkResultat(self.SQL.sjekkFerdigbrentKaffe(kaffenavn, kaffebrenneri))):
-                    input("Kaffen eksistere fra før. Velg et annet kaffenavn for å fortsette.")
+                    input("Kaffen eksisterer fra før. Velg et annet kaffenavn for å fortsette.")
                     continue
                 else:
                     self.SQL.addFerdigbrentKaffe(kaffenavn, kaffebrenneri, brenningsgrad, brennedato, beskrivelse, kilospris, kaffeparti) 
@@ -214,7 +213,7 @@ class App:
                     ok = False
                     while True:
                         try:
-                            prøveIgjen = str(input("Noe gikk feil. Vil du prøve igjen? (Ja/Nei):  "))
+                            prøveIgjen = str(input("Noe gikk galt. Vil du prøve igjen? (Ja/Nei):  "))
                             if (mode.casefold() != "ja" and mode.casefold() != "nei"):
                                 print("Ugyldig input. Prøv igjen...")
                                 continue
