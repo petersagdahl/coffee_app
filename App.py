@@ -8,7 +8,7 @@ import datetime
 class App:
 
     def __init__(self):
-        self.SQL =  queries('FerdigstiltDatabase.db')
+        self.SQL =  queries('kaffeDB.db')
         self.user = None
 
     def runApp(self):
