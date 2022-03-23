@@ -9,17 +9,17 @@ import datetime
 class App:
 
     def __init__(self):
-        self.SQL =  queries('kaffeDB.db')
+        self.SQL =  queries('kaffeDatabase.db')
         self.user = None
 
     def runApp(self):
         done = False
         print("""
-        Skriv inn tall:
-        1. User
-        2. Admin 
+Skriv inn tall:
+1. Bruker
+2. Admin 
             """)
-        start = int(input('{:15}'.format("Handling:  ")))
+        start = int(input('{:15}'.format("Valg:  ")))
 
         if (start == 1):
             loggetInn = self.logIn()
@@ -33,7 +33,7 @@ class App:
 
     def admin(self):
         print("""
-        Regsitrer en kaffe.
+Regsitrer en kaffe.
         """)
         kaffebønner = []
         gårdsid = None
@@ -41,99 +41,118 @@ class App:
         kaffeparti = None
         kaffebrenneri = None
 
-
-        #GÅRD
-        print("Hvilken gård dyrker kaffens bønner?")
-        while True:
-            try:
-                gårdsid = int(input('{:15}'.format("GårdsID:  ")))
-                break
-            except Exception as e:
-                print(e)
-        if (self.SQL.sjekkResultat(self.SQL.sjekkGård(gårdsid)) == False):
-            respond = str(input("Gården finnes ikke, vil du registrere en ny? (Ja/Nei)"))
-            while True:
-                if (respond.casefold() == "ja"):
-                    try:
-                        gårdsid = str(input('{:15}'.format("GårdsID:  ")))
-                        gårdsnavn = str(input('{:15}'.format("Gårdsnavn:  ")))
-                        moh = str(input('{:15}'.format("Meter over havet:  ")))
-                        region = str(input('{:15}'.format("Region:  ")))
-                        land = str(input('{:15}'.format("Land:  ")))
-                
-                        self.SQL.addGård(gårdsid, gårdsnavn, moh, region, land)
-                        break
-                    except Exception as e:
-                        print(e)
-
-
-                else:
-                    return
-        #foredlingsmetode
-        foredlingsmetode = str(input('{:15}'.format("Foredlingmetode:  "))).casefold()
-        done = False
-        while done == False:
-            try:
-                if (self.SQL.sjekkMetode(foredlingsmetode) != ""):
-                    respond = str(input("""
-                    Det finnes allerede metode(r) med samme navn. 
-                    Vil du likevelregistrere ny metode med samme navn? (Ja/Nei):  
-                    """))
-                    if (respond.casefold() == "nei"):
-                        metodeID = self.SQL.sjekkMetode(foredlingsmetode)
-                        break
-                    elif (respond.casefold() == "ja"):
-                        metodenavn = str(input('{:15}'.format("Metodenavn:  ")))
-                        forklaring = str(input('{:15}'.format("Foklaring")))
-                        metodeID = self.SQL.addForedlingsmetode(metodenavn, forklaring)
-                        break
-                else:
-                    metodenavn = str(input('{:15}'.format("Metodenavn:  ")))
-                    forklaring = str(input('{:15}'.format("Foklaring")))
-                    metodeID = self.SQL.addForedlingsmetode(metodenavn, forklaring)
-                    break
-
-            except Exception as e:
-                print(e)
-
-        #kaffebønner
-        kaffeart = ""
-        print("""Skriv inn de kaffebønnene ditt kaffeparti betstår av. Husk at alle disse må produseres av gården du har valgt.""")
-        while kaffeart != "ferdig":
-           
-            try:
-                kaffeart = str(input('{:15}'.format("Skriv inn kaffeart:  "))).casefold()
-                if (self.SQL.sjekkResultat(self.SQL.sjekkKaffebønner(kaffeart, gårdsid)) and kaffeart.casefold() != "ferdig"):
-                    input("Denne er allerede registrert. Enter for å fortsette.")
-                    kaffeID = int(str(self.SQL.sjekkKaffebønner(kaffeart, gårdsid)).strip().translate(str.maketrans("", "", "[]()'")))
-                    kaffebønner.append(kaffeID)
-                    continue
-                elif kaffeart.casefold() != "ferdig":
-                    kaffeID = self.SQL.addKaffebønner(kaffeart, gårdsid)
-                    kaffebønner.append(kaffeID)
-                    continue
-            except Exception as e:
-                print(e)
-
-        #kaffeparti
-        
-        while True:
+        #Kaffeparti
+        print("Skriv inn kaffepartiet kaffen består av.")
+        respond = str(input("Er partiet allerede registrert? (Ja/Nei):  "))
+        while True and respond.casefold() == "ja":
+            
             print("Registrer kaffepartiet kaffen består av.")
-            try:
-                #kanskje vi bare skal sette en begrensning om at en kaffe = et kaffeparti
-                respond = str(input("Er partiet allerede registrert? (Ja/Nei):  "))
-                if (respond.casefold() == "ja"):
-                    kaffeparti = int(input('{:15}'.format("KPID:  ")))
-                    break
-                else:
-                    innhøstingsår = int(input('{:15}'.format("Innhøstingsår:  ")))
-                    kilosprisUSD = float(input('{:15}'.format("Kilospris i USD:  ")))
-                    print(metodeID)
-                    kaffeparti = self.SQL.addParti(innhøstingsår, kilosprisUSD, gårdsid, metodeID, kaffebønner)
+            try: 
+                kaffepartiFraBruker = int(input('{:15}'.format("KPID:  ")))
+                
+                if (self.SQL.sjekkParti(kaffepartiFraBruker)):
+                    kaffeparti = kaffepartiFraBruker
                     break
 
+                else:
+                    input("Kaffepartiet finnes ikke")
+                    respond = str(input("Er partiet allerede registrert? (Ja/Nei):  "))
+                    continue
             except Exception as e:
                     print(e)
+        if (respond.casefold() == "nei"):
+            #GÅRD
+            print("Hvilken gård dyrker kaffens bønner?")
+            while True:
+                try:
+                    gårdsid = int(input('{:15}'.format("GårdsID:  ")))
+                    break
+                except Exception as e:
+                    print(e)
+            if (self.SQL.sjekkResultat(self.SQL.sjekkGård(gårdsid)) == False):
+                respond = str(input("Gården finnes ikke, vil du registrere en ny? (Ja/Nei)"))
+                while True:
+                    if (respond.casefold() == "ja"):
+                        try:
+                            gårdsid = str(input('{:15}'.format("GårdsID:  ")))
+                            gårdsnavn = str(input('{:15}'.format("Gårdsnavn:  ")))
+                            moh = str(input('{:15}'.format("Meter over havet:  ")))
+                            region = str(input('{:15}'.format("Region:  ")))
+                            land = str(input('{:15}'.format("Land:  ")))
+                    
+                            self.SQL.addGård(gårdsid, gårdsnavn, moh, region, land)
+                            break
+                        except Exception as e:
+                            print(e)
+
+
+                    else:
+                        return
+            #foredlingsmetode
+            
+            done = False
+            while done == False:
+                metodenavn = str(input('{:15}'.format("Foredlingmetode:  "))).casefold()
+                try:
+                    if (self.SQL.sjekkMetode(metodenavn) != ""):
+                        respond = str(input("""
+                        
+Det finnes allerede metode(r) med samme navn. 
+Vil du likevelregistrere ny metode med samme navn? (Ja/Nei):  
+"""))
+                        if (respond.casefold() == "nei"):
+                            metodeID = self.SQL.sjekkMetode(metodenavn)
+                            break
+                        elif (respond.casefold() == "ja"):
+                            forklaring = str(input('{:15}'.format("Foklaring:  ")))
+                            metodeID = self.SQL.addForedlingsmetode(metodenavn, forklaring)
+                            break
+                    else:
+                        forklaring = str(input('{:15}'.format("Foklaring:  ")))
+                        metodeID = self.SQL.addForedlingsmetode(metodenavn, forklaring)
+                        break
+
+                except Exception as e:
+                    print(e)
+
+            #kaffebønner
+            kaffeart = ""
+            print("""
+Skriv inn de kaffebønnene ditt kaffeparti betstår av. 
+Husk at alle disse må produseres av gården du har valgt.
+""")
+            while kaffeart != "ferdig":
+            
+                try:
+                    kaffeart = str(input('{:15}'.format("Skriv inn kaffeart:  "))).casefold()
+                    if (self.SQL.sjekkResultat(self.SQL.sjekkKaffebønner(kaffeart, gårdsid)) and kaffeart.casefold() != "ferdig"):
+                        input("Denne er allerede registrert. Enter for å fortsette.")
+                        kaffeID = int(str(self.SQL.sjekkKaffebønner(kaffeart, gårdsid)).strip().translate(str.maketrans("", "", "[]()'")))
+                        kaffebønner.append(kaffeID)
+                        continue
+                    elif kaffeart.casefold() != "ferdig":
+                        kaffeID = self.SQL.addKaffebønner(kaffeart, gårdsid)
+                        kaffebønner.append(kaffeID)
+                        continue
+                    elif kaffeart.casefold() == "ferdig" and len(kaffebønner) == 0:
+                        input("Et kaffeparti må bestå av minst én kaffebønne. Trykk enter for å fortsette.")
+                        kaffeart = "Ikke-ferdig"
+                except Exception as e:
+                    print(e)
+
+            #kaffeparti
+            
+            while True:
+                print("Registrer kaffepartiet kaffen består av.")
+                try:
+                    #kanskje vi bare skal sette en begrensning om at en kaffe = et kaffeparti
+                        innhøstingsår = int(input('{:15}'.format("Innhøstingsår:  ")))
+                        kilosprisUSD = float(input('{:15}'.format("Kilospris i USD:  ")))
+                        kaffeparti = self.SQL.addParti(innhøstingsår, kilosprisUSD, gårdsid, metodeID, kaffebønner)
+                        break
+
+                except Exception as e:
+                        print(e)
 
         #kaffebrenneri
         while True:
@@ -385,7 +404,7 @@ class App:
                     except Exception as e:
                             print(e)
                     
-                if prøveIgjen == "Ja":
+                if prøveIgjen.casefold() == "ja":
                     continue
                 else:
                     break
@@ -414,7 +433,7 @@ class App:
 
         counter = 1
 
-        print("Skriv inn foretrukne land. Trykk enter når du er ferdig.")
+        print("Skriv inn ett foretrukket land av gangen. Trykk enter uten input når du er ferdig.")
         while True:
             inputLand = ""
             try:
@@ -428,7 +447,7 @@ class App:
                 break 
             
         counter = 1
-        print("Skriv inn foretrukne foredlingsmetoder. Trykk enter når du er ferdig.")
+        print("Skriv inn én foretrukket foredlingsmetode av gangen. Trykk enter uten input når du er ferdig.")
         while True:
             foredlingsmetode = ""
             try:
@@ -442,7 +461,8 @@ class App:
                 break    
 
         counter = 1
-        print("Skriv inn foredlingsmetoder du IKKE ønsker. Trykk enter når du er ferdig.")
+        print("""Skriv inn én foredlingsmetode du IKKE ønsker av gangen. (Kan ikke være samme som foretrukne.)
+Trykk enter uten input når du er ferdig.""")
         while True:
             ikke_foredlingsmetode = ""
             try:
@@ -481,6 +501,10 @@ class App:
                 row.append(item)
             rows.append(row)
 
+        if (len(rows) == 0):
+            print("Et slikt resultat finnes ikke.")
+            return
+
         print("  +  "+'\n'.join([''.join(['{}'.format('-'*15 + "  +  ") for x in header])]))
         print('\n'.join([''.join(['{:20}'.format("  |  " + x) for x in header])]) + "  |  ")
         print("  +  " +'\n'.join([''.join(['{}'.format("---------------  +  ") for x in header])]))
@@ -488,11 +512,6 @@ class App:
         print("  +  "+'\n'.join([''.join(['{}'.format('-'*15 + "  +  ") for x in header])]))
 
 
-    def mostValueForMoney():
-        return None
-
-    def coffeesDescribedBy(adjective):
-        return None
 
     
 

@@ -192,11 +192,11 @@ class queries:
         IDliste = [int(i) for i in IDliste]
         førsteLedigeID = 0
 
-
-        while førsteLedigeID <= max(IDliste):
-            if førsteLedigeID not in IDliste:
-                break
-            førsteLedigeID += 1
+        if (len(IDliste) != 0):
+            while førsteLedigeID <= max(IDliste):
+                if førsteLedigeID not in IDliste:
+                    break
+                førsteLedigeID += 1
 
         #Legger til kaffe
         self.cursor.execute("""
@@ -222,7 +222,7 @@ class queries:
         resultat = self.cursor.execute("""
         SELECT KBID FROM dyrkesAv
         NATURAL JOIN kaffebønner
-        WHERE kaffeart = :kaffeart AND GårdsID = :gårdsid;
+        WHERE Bønnenavn = :kaffe AND GårdsID = :gårdsid;
         """, {"kaffeart" : kaffeart, "gårdsid" : gårdsid})
         self.con.commit()
         self.con.close
@@ -240,11 +240,11 @@ class queries:
         IDliste = [int(i) for i in IDliste]
         førsteLedigeID = 0
 
-
-        while førsteLedigeID <= max(IDliste):
-            if førsteLedigeID not in IDliste:
-                break
-            førsteLedigeID += 1
+        if (len(IDliste) != 0):
+            while førsteLedigeID <= max(IDliste):
+                if førsteLedigeID not in IDliste:
+                    break
+                førsteLedigeID += 1
         
         self.cursor.execute("""
         Insert into foredlingsmetode (MetodeID, Metodenavn, Forklaring)
@@ -269,6 +269,16 @@ class queries:
 
 
         return str(resultat.fetchall()).strip().translate(str.maketrans("", "", "[](),"))
+    
+    def sjekkParti(self, KPID):
+        resultat = self.cursor.execute("""
+        SELECT KPID FROM kaffeparti
+        WHERE KPID = :KPID;
+        """, {"KPID" : KPID})
+        self.con.commit()
+        self.con.close
+
+        return str(resultat.fetchall()).strip().translate(str.maketrans("", "", ",[]()'"))
 
     def addParti(self, innhøstingsår, kilosprisUSD, gårdsID, metodeID, kaffebønner):
         #må finne KPID
@@ -280,11 +290,11 @@ class queries:
         IDliste = [int(i) for i in IDliste]
         førsteLedigeID = 0
 
-
-        while førsteLedigeID <= max(IDliste):
-            if førsteLedigeID not in IDliste:
-                break
-            førsteLedigeID += 1
+        if (len(IDliste) != 0):
+            while førsteLedigeID <= max(IDliste):
+                if førsteLedigeID not in IDliste:
+                    break
+                førsteLedigeID += 1
 
 
         self.cursor.execute("""
