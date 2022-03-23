@@ -5,7 +5,6 @@ import sqlite3
 from Bruker import bruker
 import datetime
 
-
 class App:
 
     def __init__(self):
@@ -16,9 +15,9 @@ class App:
         done = False
         print("""
 Skriv inn tall:
-1. Bruker
-2. Admin 
-            """)
+    1. Bruker
+    2. Admin 
+""")
         start = int(input('{:15}'.format("Valg:  ")))
 
         if (start == 1):
@@ -180,10 +179,10 @@ Husk at alle disse må produseres av gården du har valgt.
                     brennedato = str(input('{:15}'.format("Brennedato:  ")))
                     dato = self.sjekkDato(brennedato)
                 beskrivelse = str(input('{:15}'.format("Beskrivelse:  ")))
-                kilospris = float(input('{:15}'.format("Kilospris:  ")))
+                kilospris = float(input('{:15}'.format("Kilopris:  ")))
 
                 if (self.SQL.sjekkResultat(self.SQL.sjekkFerdigbrentKaffe(kaffenavn, kaffebrenneri))):
-                    input("Kaffen eksistere fra før. Velg et annet kaffenavn for å fortsette.")
+                    input("Kaffen eksisterer fra før. Velg et annet kaffenavn for å fortsette.")
                     continue
                 else:
                     self.SQL.addFerdigbrentKaffe(kaffenavn, kaffebrenneri, brenningsgrad, brennedato, beskrivelse, kilospris, kaffeparti) 
@@ -233,7 +232,7 @@ Husk at alle disse må produseres av gården du har valgt.
                     ok = False
                     while True:
                         try:
-                            prøveIgjen = str(input("Noe gikk feil. Vil du prøve igjen? (Ja/Nei):  "))
+                            prøveIgjen = str(input("Noe gikk galt. Vil du prøve igjen? (Ja/Nei):  "))
                             if (mode.casefold() != "ja" and mode.casefold() != "nei"):
                                 print("Ugyldig input. Prøv igjen...")
                                 continue
@@ -416,7 +415,7 @@ Husk at alle disse må produseres av gården du har valgt.
                 ok = False
                 while True:
                     try:
-                        prøveIgjen = str(input("Noe gikk feil. Vil du prøve igjen? (Ja/Nei):  "))
+                        prøveIgjen = str(input("Noe gikk galt. Vil du prøve igjen? (Ja/Nei):  "))
                         break
                     except Exception as e:
                             print(e)
@@ -468,7 +467,7 @@ Trykk enter uten input når du er ferdig.""")
             try:
                 ikke_foredlingsmetode = str(input('{:15}'.format("Unngå foredlingsmetode {}:  ".format(counter))))
                 if (ikke_foredlingsmetode in foredlingsmetoder):
-                    input("Kan ikke ha samme verdier for foretrukne og ikke foretrukne fordelingsmetorder")
+                    input("Kan ikke ha samme verdier for foretrukne og ikke-foretrukne fordelingsmetoder")
                     continue
                 if (ikke_foredlingsmetode != ""):
                     ikke_foredlingsmetoder.append(ikke_foredlingsmetode)
