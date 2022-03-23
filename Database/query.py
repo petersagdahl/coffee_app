@@ -79,7 +79,7 @@ class queries:
     def describedBy(self, word):
         coffee = self.cursor.execute("""
         SELECT DISTINCT Brennerinavn, Kaffenavn FROM ferdigbrentKaffe
-        NATURAL JOIN kaffeSmaking
+        LEFT OUTER JOIN kaffeSmaking USING(Kaffenavn, Brennerinavn)
         WHERE Notater LIKE "%{}%" COLLATE NOCASE OR Beskrivelse LIKE "%{}%" COLLATE NOCASE;
         """.format(word, word))
         self.con.commit()
@@ -116,11 +116,11 @@ class queries:
         landString = landString[:-3]
 
         for item in kaffeInput[1]:
-            foredlingsmetode = foredlingsmetode + "Forklaring = " + '"' + item + '"' + " COLLATE NOCASE OR "
+            foredlingsmetode = foredlingsmetode + "Metodenavn = " + '"' + item + '"' + " COLLATE NOCASE OR "
         foredlingsmetode = foredlingsmetode[:-3]
 
         for item in kaffeInput[2]:
-            ikke_foredlingsmetode = ikke_foredlingsmetode + "Forklaring <> " + '"' + item + '"' + " COLLATE NOCASE OR "
+            ikke_foredlingsmetode = ikke_foredlingsmetode + "Metodenavn <> " + '"' + item + '"' + " COLLATE NOCASE OR "
         ikke_foredlingsmetode = ikke_foredlingsmetode[:-3]
 
         totalString = ""
@@ -214,7 +214,7 @@ class queries:
         self.con.close
 
 
-        print(førsteLedigeID + "Sånn går det")
+
         return førsteLedigeID
 
     def sjekkKaffebønner(self, kaffeart, gårdsid):
@@ -234,7 +234,7 @@ class queries:
     def addForedlingsmetode(self, metodenavn, forklaring):
         #må finne KPID
         IDer = self.cursor.execute("""
-        SELECT KPID FROM kaffeparti;
+        SELECT MetodeID FROM Foredlingsmetode;
         """)
         IDliste = list(filter(None, str(IDer.fetchall()).strip().translate(str.maketrans("", "", ",[]('")).split(")")))
         IDliste = [int(i) for i in IDliste]
@@ -264,10 +264,11 @@ class queries:
         self.con.commit()
         self.con.close
 
-        print(resultat.fetchall())
+
+        
 
 
-        return str(resultat.fetchall()).strip().translate(str.maketrans("", "", ",[]('"))
+        return str(resultat.fetchall()).strip().translate(str.maketrans("", "", "[](),"))
 
     def addParti(self, innhøstingsår, kilosprisUSD, gårdsID, metodeID, kaffebønner):
         #må finne KPID
@@ -326,7 +327,6 @@ class queries:
         return str(resultat.fetchall()).strip().translate(str.maketrans("", "", ",[]()'"))
     
     def addFerdigbrentKaffe(self, kaffenavn, brennerinavn, brenningsgrad, brennedato, beskrivelse, kilospris, KPID):
-        print(brennerinavn + "hmmm")
         self.cursor.execute("""
         Insert into ferdigbrentKaffe VALUES (:kaffenavn, :brennerinavn, :brenningsgrad, :brennedato, :beskrivelse, :kilospris, :KPID);
         """, {"kaffenavn" : kaffenavn, "brennerinavn" : brennerinavn, "brenningsgrad" : brenningsgrad, "brennedato" : brennedato, "beskrivelse" : beskrivelse, "kilospris" : kilospris, "KPID" :KPID})
@@ -348,8 +348,6 @@ class queries:
 
 
     def sjekkResultat(self, resultat):
-        formatertResultat = str(resultat).strip().translate(str.maketrans("", "", "[]()'"))
-        print(formatertResultat + "hva søren")
-        print(False if (formatertResultat == "") else True)
+        formatertResultat = str(resultat).strip().translate(str.maketrans("", "", "[](),"))
         return False if (formatertResultat == "") else True
  
