@@ -142,26 +142,8 @@ class queries:
         return totalString
 
     """
-    Mulig alt under kan ekskluderes, men litt funksjonalitet for admin.
+    Under er koden for admin-funksjonalitet, som brukes for innsetting i databasen.
     """
-
-    # def addBrenneri(self, brennerinavn):
-    #     self.cursor.execute("""
-    #     Insert into kaffebrenneri VALUES (:Brennerinavn);
-    #     """, {"Brennerinavn" : brennerinavn})
-
-    #     self.con.commit()
-    #     self.con.close
-
-    # def sjekkBrenneri(self, brennerinavn):
-    #     self.cursor.execute("""
-    #     SELECT * FROM kaffebrenneri
-    #     WHERE brennerinavn = :Brennerinavn;
-    #     """, {"Brennerinavn" : brennerinavn})
-
-    #     self.con.commit()
-    #     self.con.close
-
 
 
     def addGård(self, gårdsid, gårdsnavn, moh, region, land): 
@@ -207,8 +189,6 @@ class queries:
         self.con.commit()
         self.con.close
 
-        
-
         return str(resultat.fetchall()).strip().translate(str.maketrans("", "", ",[]('"))
 
     def addKaffedyrker(self, bønnenavn, gårdsid):
@@ -229,8 +209,6 @@ class queries:
         """, {"bønnenavn" : bønnenavn})
         self.con.commit()
         self.con.close
-
-        
 
         return str(resultat.fetchall()).strip().translate(str.maketrans("", "", ",[]('"))
 
@@ -266,10 +244,6 @@ class queries:
         """, {"metodenavn" : metodenavn})
         self.con.commit()
         self.con.close
-
-
-        
-
 
         return str(resultat.fetchall()).strip().translate(str.maketrans("", "", "[](),"))
     
@@ -310,8 +284,8 @@ class queries:
         #Legge til bønnene partiet består av
         for item in kaffebønner:
             self.cursor.execute("""
-            Insert into bestårAv VALUES (:KPID, :KBID);
-            """, {"KPID" : førsteLedigeID, "KBID" : item})
+            Insert into bestårAv VALUES (:KPID, :Bønnenavn);
+            """, {"KPID" : førsteLedigeID, "Bønnenavn" : item})
             self.con.commit()
 
         

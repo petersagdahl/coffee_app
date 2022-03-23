@@ -154,7 +154,6 @@ Husk at alle disse må produseres av gården du har valgt.
             while True:
                 print("Registrer kaffepartiet kaffen består av.")
                 try:
-                    #kanskje vi bare skal sette en begrensning om at en kaffe = et kaffeparti
                         innhøstingsår = int(input('{:15}'.format("Innhøstingsår:  ")))
                         kilosprisUSD = float(input('{:15}'.format("Kilospris i USD:  ")))
                         kaffeparti = self.SQL.addParti(innhøstingsår, kilosprisUSD, gårdsid, metodeID, kaffebønner)
