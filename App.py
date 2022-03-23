@@ -397,7 +397,7 @@ class App:
                 ok = False
                 while True:
                     try:
-                        prøveIgjen = str(input("Noe gikk feil. Vil du prøve igjen? (Ja/Nei):  "))
+                        prøveIgjen = str(input("Noe gikk galt. Vil du prøve igjen? (Ja/Nei):  "))
                         break
                     except Exception as e:
                             print(e)
@@ -448,7 +448,7 @@ class App:
             try:
                 ikke_foredlingsmetode = str(input('{:15}'.format("Unngå foredlingsmetode {}:  ".format(counter))))
                 if (ikke_foredlingsmetode in foredlingsmetoder):
-                    input("Kan ikke ha samme verdier for foretrukne og ikke foretrukne fordelingsmetorder")
+                    input("Kan ikke ha samme verdier for foretrukne og ikke-foretrukne fordelingsmetoder")
                     continue
                 if (ikke_foredlingsmetode != ""):
                     ikke_foredlingsmetoder.append(ikke_foredlingsmetode)
