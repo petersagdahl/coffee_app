@@ -1,4 +1,3 @@
-from msilib.schema import Error
 from unittest import result
 from Database.query import queries
 import sqlite3
@@ -134,6 +133,7 @@ Husk at alle disse må produseres av gården du har valgt.
                 try:
                     bønnenavn = str(input('{:15}'.format("Skriv inn bønnenavn:  "))).casefold()
                     if (self.SQL.sjekkResultat(self.SQL.sjekkKaffebønner(bønnenavn)) and bønnenavn.casefold() != "ferdig"):
+
                         if not (self.SQL.sjekkResultat(self.SQL.sjekkKaffedyrker(bønnenavn, gårdsid))):
                             self.SQL.addKaffedyrker(bønnenavn, gårdsid)
                         input("Denne er allerede registrert. Enter for å fortsette.")
@@ -238,7 +238,8 @@ Husk at alle disse må produseres av gården du har valgt.
                 try:
                     self.SQL.registerUser(email, forname, surname, password)
                     ok = True
-                except sqlite3.Error:
+                except Exception as e:
+                    print(e)
                     ok = False
                     while True:
                         try:
@@ -273,7 +274,7 @@ Husk at alle disse må produseres av gården du har valgt.
                     ok = True
                     error = False
 
-                except sqlite3.Error:
+                except Exception:
                     ok = False
                     error = True
                     while True:
@@ -420,7 +421,7 @@ Husk at alle disse må produseres av gården du har valgt.
             try:
                 self.SQL.register(brenneri, kaffenavn, poeng, smaksnotat, self.user.getEmail())
                 ok = True
-            except sqlite3.Error as e:
+            except Exception as e:
                 print(e)
                 ok = False
                 while True:
