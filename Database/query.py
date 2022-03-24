@@ -62,7 +62,7 @@ class queries:
 
     def mostValue(self):
         coffee = self.cursor.execute("""
-        SELECT Brennerinavn, Kaffenavn, Kilospris, ROUND(AVG(Poeng), 2) as Snittscore FROM ferdigbrentKaffe
+        SELECT Brennerinavn, Kaffenavn, Kilospris, ROUND(AVG(Poeng), 3) as Snittscore FROM ferdigbrentKaffe
         NATURAL JOIN kaffeSmaking
         GROUP BY Kaffenavn, Brennerinavn
         ORDER BY Snittscore/Kilospris DESC;
