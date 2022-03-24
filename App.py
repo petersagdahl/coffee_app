@@ -134,7 +134,8 @@ Husk at alle disse må produseres av gården du har valgt.
                 try:
                     bønnenavn = str(input('{:15}'.format("Skriv inn bønnenavn:  "))).casefold()
                     if (self.SQL.sjekkResultat(self.SQL.sjekkKaffebønner(bønnenavn)) and bønnenavn.casefold() != "ferdig"):
-                        self.SQL.addKaffedyrker(bønnenavn, gårdsid)
+                        if not (self.SQL.sjekkResultat(self.SQL.sjekkKaffedyrker(bønnenavn, gårdsid))):
+                            self.SQL.addKaffedyrker(bønnenavn, gårdsid)
                         input("Denne er allerede registrert. Enter for å fortsette.")
                         kaffebønner.append(bønnenavn)
                         continue
@@ -185,7 +186,7 @@ Husk at alle disse må produseres av gården du har valgt.
                 brenningsgrad = str(input('{:15}'.format("Brenningsgrad (lys, middels eller mørk):  ")))
                 dato = False
                 while dato == False:
-                    brennedato = str(input('{:15}'.format("Brennedato:  ")))
+                    brennedato = str(input('{:15}'.format("Brennedato (yyyy-mm-dd):  ")))
                     dato = self.sjekkDato(brennedato)
                 beskrivelse = str(input('{:15}'.format("Beskrivelse:  ")))
                 kilospris = float(input('{:15}'.format("Kilopris:  ")))
@@ -415,7 +416,7 @@ Husk at alle disse må produseres av gården du har valgt.
                 if prøveIgjen.casefold() == "ja":
                     continue
                 else:
-                    break
+                    return
             try:
                 self.SQL.register(brenneri, kaffenavn, poeng, smaksnotat, self.user.getEmail())
                 ok = True
@@ -513,11 +514,11 @@ Trykk enter uten input når du er ferdig.""")
             print("Et slikt resultat finnes ikke.")
             return
 
-        print("  +  "+'\n'.join([''.join(['{}'.format('-'*15 + "  +  ") for x in header])]))
-        print('\n'.join([''.join(['{:20}'.format("  |  " + x) for x in header])]) + "  |  ")
-        print("  +  " +'\n'.join([''.join(['{}'.format("---------------  +  ") for x in header])]))
-        print('\n'.join([''.join(['{:20}'.format("  |  " + x) for x in r ]) + "  |  " for r in rows ]))
-        print("  +  "+'\n'.join([''.join(['{}'.format('-'*15 + "  +  ") for x in header])]))
+        print("  +  "+'\n'.join([''.join(['{}'.format('-'*25 + "  +  ") for x in header])]))
+        print('\n'.join([''.join(['{:30}'.format("  |  " + x) for x in header])]) + "  |  ")
+        print("  +  " +'\n'.join([''.join(['{}'.format("-------------------------  +  ") for x in header])]))
+        print('\n'.join([''.join(['{:30}'.format("  |  " + x) for x in r ]) + "  |  " for r in rows ]))
+        print("  +  "+'\n'.join([''.join(['{}'.format('-'*25 + "  +  ") for x in header])]))
 
 
 

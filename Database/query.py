@@ -45,12 +45,11 @@ class queries:
 
     def testedMost(self):
         names = self.cursor.execute("""
-        SELECT Fornavn, Etternavn, count(email) AS AntallSmakt FROM
-        (SELECT Fornavn, Etternavn, Email FROM kaffeSmaking
-        NATURAL JOIN bruker
-        GROUP BY Kaffenavn, Brennerinavn)
-		GROUP BY Email
-        ORDER BY AntallSmakt DESC;
+        SELECT Fornavn, Etternavn, count(email) as AntallKaffe FROM
+        (SELECT Fornavn, Email, Etternavn, COUNT(*) FROM kaffeSmaking NATURAL JOIN bruker
+        GROUP BY email, kaffenavn, Brennerinavn)
+        GROUP BY Email
+        ORDER BY AntallKaffe DESC;
         """)
 
         self.con.commit()
