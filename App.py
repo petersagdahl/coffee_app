@@ -31,7 +31,7 @@ Skriv inn tall:
 
     def admin(self):
         print("""
-Regsitrer en kaffe.
+Registrer en kaffe.
         """)
         kaffebønner = []
         gårdsid = None
@@ -111,11 +111,11 @@ Vil du likevelregistrere ny metode med samme navn? (Ja/Nei):
                             metodeID = self.SQL.sjekkMetode(metodenavn)
                             break
                         elif (respond.casefold() == "ja"):
-                            forklaring = str(input('{:15}'.format("Foklaring:  ")))
+                            forklaring = str(input('{:15}'.format("Forklaring:  ")))
                             metodeID = self.SQL.addForedlingsmetode(metodenavn, forklaring)
                             break
                     else:
-                        forklaring = str(input('{:15}'.format("Foklaring:  ")))
+                        forklaring = str(input('{:15}'.format("Forklaring:  ")))
                         metodeID = self.SQL.addForedlingsmetode(metodenavn, forklaring)
                         break
 
@@ -126,7 +126,7 @@ Vil du likevelregistrere ny metode med samme navn? (Ja/Nei):
             bønnenavn = ""
             print("""
 Skriv inn de kaffebønnene ditt kaffeparti består av. 
-Husk at alle disse må produseres av gården du har valgt.
+Husk at alle disse må produseres av gården du har valgt. Skriv "ferdig" når du ikke skal registrere flere.
 """)
             while bønnenavn != "ferdig":
             
@@ -140,7 +140,7 @@ Husk at alle disse må produseres av gården du har valgt.
                         kaffebønner.append(bønnenavn)
                         continue
                     elif bønnenavn.casefold() != "ferdig":
-                        kaffeart = str('{:15}'.format(input("Kaffeart:  ")))[:-1]
+                        kaffeart = str('{:15}'.format(input("Kaffeart (Coffea Arabica/Coffea Robusta/Coffea Liberica):  ")))[:-1]
                         self.SQL.addKaffebønner(bønnenavn, kaffeart, gårdsid)
                         kaffebønner.append(bønnenavn)
                         continue
@@ -183,7 +183,7 @@ Husk at alle disse må produseres av gården du har valgt.
             print("Registrer ferdigbrent kaffe")
             try:
                 kaffenavn = str(input('{:15}'.format("Kaffenavn:  ")))
-                brenningsgrad = str(input('{:15}'.format("Brenningsgrad (lys, middels eller mørk):  ")))
+                brenningsgrad = str(input('{:15}'.format("Brenningsgrad (lys/middels/mørk):  ")))
                 dato = False
                 while dato == False:
                     brennedato = str(input('{:15}'.format("Brennedato (yyyy-mm-dd):  ")))
