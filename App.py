@@ -203,7 +203,7 @@ Husk at alle disse må produseres av gården du har valgt. Skriv "ferdig" når d
 
 
 
-                
+                1
 
     def sjekkDato(self, datostring):
         try:   
